@@ -1,0 +1,1444 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Indian Festival Calendar with Photos</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+      }
+
+      body {
+        background: linear-gradient(
+          135deg,
+          #ff9933 0%,
+          #ffffff 50%,
+          #138808 100%
+        );
+        color: #333;
+        line-height: 1.6;
+        min-height: 100vh;
+        padding: 20px;
+      }
+
+      .container {
+        max-width: 1400px;
+        margin: 0 auto;
+        background: white;
+        border-radius: 20px;
+        box-shadow: 0 25px 50px rgba(0, 0, 0, 0.2);
+        overflow: hidden;
+      }
+
+      header {
+        text-align: center;
+        padding: 40px;
+        background: linear-gradient(
+          135deg,
+          #ff9933 0%,
+          #ffffff 50%,
+          #138808 100%
+        );
+        color: #333;
+        position: relative;
+      }
+
+      h1 {
+        font-size: 3rem;
+        margin-bottom: 10px;
+        color: #333;
+      }
+
+      .subtitle {
+        font-size: 1.3rem;
+        opacity: 0.9;
+        color: #555;
+      }
+
+      .tricolor {
+        height: 8px;
+        background: linear-gradient(
+          90deg,
+          #ff9933 33%,
+          #ffffff 33%,
+          #ffffff 66%,
+          #138808 66%
+        );
+        margin: 20px 0;
+        border-radius: 4px;
+      }
+
+      .calendar-container {
+        padding: 30px;
+      }
+
+      .calendar-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 30px;
+        padding: 0 20px;
+      }
+
+      .calendar-header h2 {
+        font-size: 2rem;
+        color: #138808;
+        font-weight: 700;
+      }
+
+      .calendar-nav {
+        display: flex;
+        gap: 15px;
+        align-items: center;
+      }
+
+      .calendar-nav button {
+        background: #138808;
+        color: white;
+        border: none;
+        padding: 12px 20px;
+        border-radius: 10px;
+        cursor: pointer;
+        font-size: 16px;
+        font-weight: 600;
+        transition: all 0.3s;
+      }
+
+      .calendar-nav button:hover {
+        background: #0f7006;
+        transform: translateY(-2px);
+      }
+
+      .view-options {
+        display: flex;
+        gap: 10px;
+      }
+
+      .view-btn {
+        padding: 10px 20px;
+        border: 2px solid #138808;
+        background: white;
+        color: #138808;
+        border-radius: 8px;
+        cursor: pointer;
+        font-weight: 600;
+        transition: all 0.3s;
+      }
+
+      .view-btn.active {
+        background: #138808;
+        color: white;
+      }
+
+      .week-days {
+        display: grid;
+        grid-template-columns: repeat(7, 1fr);
+        gap: 8px;
+        text-align: center;
+        font-weight: 700;
+        margin-bottom: 15px;
+        background: #f0f4ff;
+        padding: 15px;
+        border-radius: 12px;
+        color: #138808;
+      }
+
+      .calendar-grid {
+        display: grid;
+        grid-template-columns: repeat(7, 1fr);
+        gap: 8px;
+      }
+
+      .calendar-day {
+        min-height: 180px;
+        padding: 15px;
+        border: 2px solid #e9ecef;
+        border-radius: 12px;
+        background: #fafbff;
+        transition: all 0.3s;
+        position: relative;
+        cursor: pointer;
+      }
+
+      .calendar-day:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 15px 30px rgba(0, 0, 0, 0.15);
+        background: #fff;
+      }
+
+      .day-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 10px;
+        padding-bottom: 8px;
+        border-bottom: 2px dashed #e9ecef;
+      }
+
+      .day-number {
+        font-weight: 700;
+        font-size: 1.2rem;
+        color: #333;
+      }
+
+      .add-event-btn {
+        background: #138808;
+        color: white;
+        border: none;
+        width: 28px;
+        height: 28px;
+        border-radius: 50%;
+        cursor: pointer;
+        font-size: 16px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        opacity: 0;
+        transition: opacity 0.3s;
+      }
+
+      .calendar-day:hover .add-event-btn {
+        opacity: 1;
+      }
+
+      .today {
+        background: #e6f7ff;
+        border-color: #138808;
+      }
+
+      .today .day-number {
+        background: #138808;
+        color: white;
+        width: 35px;
+        height: 35px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 50%;
+      }
+
+      .events-container {
+        max-height: 120px;
+        overflow-y: auto;
+      }
+
+      .event {
+        background: #138808;
+        color: white;
+        padding: 8px 10px;
+        border-radius: 8px;
+        margin-top: 6px;
+        font-size: 0.8rem;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        transition: all 0.3s;
+      }
+
+      .event:hover {
+        transform: scale(1.02);
+        opacity: 0.9;
+      }
+
+      .event-photo {
+        width: 24px;
+        height: 24px;
+        border-radius: 50%;
+        object-fit: cover;
+        border: 2px solid white;
+      }
+
+      .event-time {
+        font-size: 0.75rem;
+        opacity: 0.9;
+        margin-left: auto;
+      }
+
+      .event-indian {
+        background: #ff9933;
+      }
+
+      .event-festival {
+        background: #9c27b0;
+      }
+
+      .event-holiday {
+        background: #e91e63;
+      }
+
+      .event-national {
+        background: #138808;
+      }
+
+      .event-count {
+        position: absolute;
+        top: 12px;
+        right: 12px;
+        background: #ff6b6b;
+        color: white;
+        border-radius: 50%;
+        width: 24px;
+        height: 24px;
+        font-size: 0.8rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: bold;
+      }
+
+      .festival-badge {
+        position: absolute;
+        top: -5px;
+        left: -5px;
+        background: #ff9933;
+        color: white;
+        padding: 4px 8px;
+        border-radius: 12px;
+        font-size: 0.7rem;
+        font-weight: bold;
+      }
+
+      /* Modal Styles */
+      .modal {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.8);
+        z-index: 1000;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .modal-content {
+        background: white;
+        padding: 40px;
+        border-radius: 20px;
+        width: 90%;
+        max-width: 600px;
+        box-shadow: 0 25px 50px rgba(0, 0, 0, 0.3);
+        max-height: 90vh;
+        overflow-y: auto;
+      }
+
+      .modal-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 25px;
+        padding-bottom: 20px;
+        border-bottom: 2px solid #e9ecef;
+      }
+
+      .close-modal {
+        background: none;
+        border: none;
+        font-size: 28px;
+        cursor: pointer;
+        color: #666;
+      }
+
+      .form-group {
+        margin-bottom: 20px;
+      }
+
+      label {
+        display: block;
+        margin-bottom: 8px;
+        font-weight: 600;
+        color: #374151;
+      }
+
+      input,
+      select,
+      textarea {
+        width: 100%;
+        padding: 12px;
+        border: 2px solid #d1d5db;
+        border-radius: 8px;
+        font-size: 16px;
+        transition: all 0.3s;
+      }
+
+      input:focus,
+      select:focus,
+      textarea:focus {
+        border-color: #138808;
+        outline: none;
+        box-shadow: 0 0 0 3px rgba(19, 136, 8, 0.1);
+      }
+
+      .form-row {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 15px;
+      }
+
+      .photo-upload {
+        border: 2px dashed #d1d5db;
+        border-radius: 8px;
+        padding: 20px;
+        text-align: center;
+        cursor: pointer;
+        transition: all 0.3s;
+      }
+
+      .photo-upload:hover {
+        border-color: #138808;
+        background: #f0f9f0;
+      }
+
+      .photo-preview {
+        width: 100%;
+        max-height: 200px;
+        object-fit: cover;
+        border-radius: 8px;
+        margin-top: 10px;
+        display: none;
+      }
+
+      .form-actions {
+        display: flex;
+        gap: 15px;
+        margin-top: 30px;
+      }
+
+      .btn {
+        padding: 15px 30px;
+        border: none;
+        border-radius: 10px;
+        cursor: pointer;
+        font-size: 16px;
+        font-weight: 600;
+        transition: all 0.3s;
+        flex: 1;
+      }
+
+      .btn-primary {
+        background: #138808;
+        color: white;
+      }
+
+      .btn-primary:hover {
+        background: #0f7006;
+        transform: translateY(-2px);
+      }
+
+      .btn-secondary {
+        background: #f8f9fa;
+        color: #374151;
+        border: 2px solid #d1d5db;
+      }
+
+      .btn-danger {
+        background: #ef4444;
+        color: white;
+      }
+
+      .btn-danger:hover {
+        background: #dc2626;
+      }
+
+      .empty-state {
+        text-align: center;
+        color: #666;
+        font-style: italic;
+        padding: 20px;
+        font-size: 1rem;
+      }
+
+      .event-details {
+        margin-top: 20px;
+      }
+
+      .event-image {
+        width: 100%;
+        max-height: 300px;
+        object-fit: cover;
+        border-radius: 12px;
+        margin-bottom: 20px;
+      }
+
+      .event-info {
+        background: #f8f9fa;
+        padding: 20px;
+        border-radius: 12px;
+        margin-bottom: 20px;
+      }
+
+      .event-info h4 {
+        color: #138808;
+        margin-bottom: 15px;
+      }
+
+      .info-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 15px;
+      }
+
+      .info-item {
+        display: flex;
+        flex-direction: column;
+      }
+
+      .info-label {
+        font-weight: 600;
+        color: #666;
+        font-size: 0.9rem;
+      }
+
+      .info-value {
+        color: #333;
+        font-weight: 500;
+      }
+
+      @media (max-width: 1024px) {
+        .calendar-day {
+          min-height: 160px;
+        }
+      }
+
+      @media (max-width: 768px) {
+        .calendar-day {
+          min-height: 140px;
+          padding: 10px;
+        }
+
+        .form-row {
+          grid-template-columns: 1fr;
+        }
+
+        .info-grid {
+          grid-template-columns: 1fr;
+        }
+      }
+
+      @media (max-width: 480px) {
+        .calendar-day {
+          min-height: 120px;
+        }
+
+        .event {
+          font-size: 0.7rem;
+          padding: 6px 8px;
+        }
+
+        .event-photo {
+          width: 20px;
+          height: 20px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <header>
+        <h1>Smart Calendar</h1>
+        <div class="tricolor"></div>
+        <p class="subtitle">Celebrating Indian Culture with Photos & Events</p>
+      </header>
+
+      <div class="calendar-container">
+        <div class="calendar-header">
+          <h2 id="currentMonth">January 2025</h2>
+          <div class="calendar-nav">
+            <button id="prevMonth">← Previous</button>
+            <button id="todayBtn">Today</button>
+            <button id="nextMonth">Next →</button>
+            <div class="view-options">
+              <button class="view-btn active" onclick="switchView('month')">
+                Month
+              </button>
+              <button class="view-btn" onclick="switchView('festivals')">
+                Festivals
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div class="week-days">
+          <div>Sun</div>
+          <div>Mon</div>
+          <div>Tue</div>
+          <div>Wed</div>
+          <div>Thu</div>
+          <div>Fri</div>
+          <div>Sat</div>
+        </div>
+
+        <div class="calendar-grid" id="calendarGrid">
+          <!-- Calendar days will be generated by JavaScript -->
+        </div>
+      </div>
+    </div>
+
+    <!-- Event Modal -->
+    <div class="modal" id="eventModal">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h3 id="modalTitle">Add Festival/Event</h3>
+          <button class="close-modal" id="closeModal">&times;</button>
+        </div>
+        <form id="eventForm">
+          <input type="hidden" id="selectedDate" />
+          <input type="hidden" id="eventId" />
+
+          <div class="form-group">
+            <label for="eventTitle">Event Title</label>
+            <input
+              type="text"
+              id="eventTitle"
+              required
+              placeholder="e.g., Diwali, Republic Day, etc."
+            />
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label for="startDate">Start Date</label>
+              <input type="date" id="startDate" required />
+            </div>
+            <div class="form-group">
+              <label for="endDate">End Date</label>
+              <input type="date" id="endDate" required />
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label for="eventCategory">Category</label>
+              <select id="eventCategory">
+                <option value="festival">Festival</option>
+                <option value="national">National Holiday</option>
+                <option value="religious">Religious</option>
+                <option value="cultural">Cultural</option>
+                <option value="personal">Personal</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="eventPriority">Priority</label>
+              <select id="eventPriority">
+                <option value="high">High</option>
+                <option value="medium" selected>Medium</option>
+                <option value="low">Low</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="eventDescription">Description</label>
+            <textarea
+              id="eventDescription"
+              rows="4"
+              placeholder="Describe the event, traditions, significance..."
+            ></textarea>
+          </div>
+
+          <div class="form-group">
+            <label for="eventLocation">Location/Celebration</label>
+            <input
+              type="text"
+              id="eventLocation"
+              placeholder="e.g., Home, Temple, Nationwide"
+            />
+          </div>
+
+          <div class="form-group">
+            <label>Event Photo</label>
+            <div
+              class="photo-upload"
+              onclick="document.getElementById('eventPhoto').click()"
+            >
+              <p>📷 Click to upload event photo</p>
+              <small>Recommended: 500x300px or larger</small>
+              <img id="photoPreview" class="photo-preview" alt="Preview" />
+            </div>
+            <input
+              type="file"
+              id="eventPhoto"
+              accept="image/*"
+              style="display: none"
+              onchange="previewPhoto(event)"
+            />
+          </div>
+
+          <div class="form-actions">
+            <button
+              type="button"
+              class="btn btn-danger"
+              id="deleteBtn"
+              style="display: none"
+            >
+              Delete
+            </button>
+            <button type="button" class="btn btn-secondary" id="cancelBtn">
+              Cancel
+            </button>
+            <button type="submit" class="btn btn-primary">Save Event</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <!-- Event Details Modal -->
+    <div class="modal" id="detailsModal">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h3 id="detailsTitle">Event Details</h3>
+          <button class="close-modal" onclick="closeDetailsModal()">
+            &times;
+          </button>
+        </div>
+        <div class="event-details">
+          <img id="detailsImage" class="event-image" alt="Event Image" />
+          <div class="event-info">
+            <h4>Event Information</h4>
+            <div class="info-grid">
+              <div class="info-item">
+                <span class="info-label">Date</span>
+                <span class="info-value" id="detailsDate"></span>
+              </div>
+              <div class="info-item">
+                <span class="info-label">Category</span>
+                <span class="info-value" id="detailsCategory"></span>
+              </div>
+              <div class="info-item">
+                <span class="info-label">Location</span>
+                <span class="info-value" id="detailsLocation"></span>
+              </div>
+              <div class="info-item">
+                <span class="info-label">Priority</span>
+                <span class="info-value" id="detailsPriority"></span>
+              </div>
+            </div>
+          </div>
+          <div class="form-group">
+            <label>Description</label>
+            <div
+              id="detailsDescription"
+              style="
+                padding: 15px;
+                background: #f8f9fa;
+                border-radius: 8px;
+                min-height: 100px;
+              "
+            ></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      // Indian Festivals and Events Data
+      const indianFestivals = [
+        {
+          id: 1,
+          title: "Republic Day",
+          date: "2024-01-26",
+          endDate: "2024-01-26",
+          category: "national",
+          priority: "high",
+          description:
+            "Celebration of the Constitution of India. Grand parade at Kartavya Path, New Delhi showcasing military might and cultural diversity.",
+          location: "Nationwide, main event in New Delhi",
+          photo:
+            "https://images.unsplash.com/photo-1579546929662-711aa81148cf?w=500&h=300&fit=crop",
+        },
+        {
+          id: 2,
+          title: "Holi",
+          date: "2024-03-25",
+          endDate: "2024-03-25",
+          category: "religious",
+          priority: "high",
+          description:
+            "Festival of colors celebrating victory of good over evil and arrival of spring. People play with colored powder and water.",
+          location: "Nationwide",
+          photo:
+            "https://images.unsplash.com/photo-1548869207-216df6c2dcc4?w=500&h=300&fit=crop",
+        },
+        {
+          id: 3,
+          title: "Diwali",
+          date: "2024-11-01",
+          endDate: "2024-11-01",
+          category: "religious",
+          priority: "high",
+          description:
+            "Festival of Lights celebrating Lord Rama's return to Ayodhya. Homes decorated with diyas, fireworks, and sweets exchange.",
+          location: "Nationwide",
+          photo:
+            "https://images.unsplash.com/photo-1604591259957-7e1e7b2d258f?w=500&h=300&fit=crop",
+        },
+        {
+          id: 4,
+          title: "Eid al-Fitr",
+          date: "2024-04-11",
+          endDate: "2024-04-11",
+          category: "religious",
+          priority: "high",
+          description:
+            "Marks the end of Ramadan. Celebrated with prayers, feasting, and charity. Traditional sweets like sewaiyan prepared.",
+          location: "Nationwide",
+          photo:
+            "https://images.unsplash.com/photo-1591607388347-86f8c40acc57?w=500&h=300&fit=crop",
+        },
+        {
+          id: 5,
+          title: "Independence Day",
+          date: "2024-08-15",
+          endDate: "2024-08-15",
+          category: "national",
+          priority: "high",
+          description:
+            "Commemorates India's independence from British rule. Prime Minister hoists flag at Red Fort, Delhi.",
+          location: "Nationwide",
+          photo:
+            "https://images.unsplash.com/photo-1593365852837-40208ed8e5e4?w=500&h=300&fit=crop",
+        },
+        {
+          id: 6,
+          title: "Ganesh Chaturthi",
+          date: "2024-09-07",
+          endDate: "2024-09-07",
+          category: "religious",
+          priority: "medium",
+          description:
+            "10-day festival celebrating birth of Lord Ganesha. Clay idols installed in homes and public pandals.",
+          location: "Pan-India, biggest in Maharashtra",
+          photo:
+            "https://images.unsplash.com/photo-1594736797933-d0401ba94693?w=500&h=300&fit=crop",
+        },
+        {
+          id: 7,
+          title: "Durga Puja",
+          date: "2024-10-09",
+          endDate: "2024-10-09",
+          category: "religious",
+          priority: "high",
+          description:
+            "Celebrates victory of Goddess Durga over demon Mahishasura. Elaborate pandals and cultural events.",
+          location: "West Bengal, Assam, Odisha, Bihar",
+          photo:
+            "https://images.unsplash.com/photo-1601912228302-1a80cc2dd712?w=500&h=300&fit=crop",
+        },
+        {
+          id: 8,
+          title: "Christmas",
+          date: "2024-12-25",
+          endDate: "2024-12-25",
+          category: "religious",
+          priority: "medium",
+          description:
+            "Celebration of birth of Jesus Christ. Churches decorated, carol singing, and gift exchanges.",
+          location: "Nationwide, significant in Goa, Kerala, NE states",
+          photo:
+            "https://images.unsplash.com/photo-1543616991-3b7c0d11f91e?w=500&h=300&fit=crop",
+        },
+        {
+          id: 9,
+          title: "Makar Sankranti",
+          date: "2025-01-14",
+          endDate: "2025-01-14",
+          category: "religious",
+          priority: "medium",
+          description:
+            "Harvest festival marking sun's transition into Capricorn. Kite flying and sesame sweets.",
+          location: "Nationwide, different names across states",
+          photo:
+            "https://images.unsplash.com/photo-1574357675870-64cbcee1ac89?w=500&h=300&fit=crop",
+        },
+        {
+          id: 10,
+          title: "Pongal",
+          date: "2025-01-14",
+          endDate: "2025-01-17",
+          category: "religious",
+          priority: "medium",
+          description:
+            "4-day Tamil harvest festival. Cooking Pongal dish, decorating houses, and cattle worship.",
+          location: "Tamil Nadu, Sri Lanka",
+          photo:
+            "https://images.unsplash.com/photo-1641897535842-9b47b1ad4b8c?w=500&h=300&fit=crop",
+        },
+        {
+          id: 11,
+          title: "Republic Day",
+          date: "2025-01-26",
+          endDate: "2025-01-26",
+          category: "national",
+          priority: "high",
+          description:
+            "Celebration of the Constitution of India. Parade at Kartavya Path, New Delhi.",
+          location: "Nationwide",
+          photo:
+            "https://images.unsplash.com/photo-1579546929662-711aa81148cf?w=500&h=300&fit=crop",
+        },
+        {
+          id: 12,
+          title: "Holi",
+          date: "2025-03-14",
+          endDate: "2025-03-14",
+          category: "religious",
+          priority: "high",
+          description:
+            "Festival of colors celebrating spring and victory of good over evil.",
+          location: "Nationwide",
+          photo:
+            "https://images.unsplash.com/photo-1548869207-216df6c2dcc4?w=500&h=300&fit=crop",
+        },
+        {
+          id: 13,
+          title: "Diwali",
+          date: "2025-10-20",
+          endDate: "2025-10-20",
+          category: "religious",
+          priority: "high",
+          description: "Festival of Lights, victory of light over darkness.",
+          location: "Nationwide",
+          photo:
+            "https://images.unsplash.com/photo-1604591259957-7e1e7b2d258f?w=500&h=300&fit=crop",
+        },
+        {
+          id: 14,
+          title: "Republic Day",
+          date: "2026-01-26",
+          endDate: "2026-01-26",
+          category: "national",
+          priority: "high",
+          description: "Celebration of the Constitution of India.",
+          location: "Nationwide",
+          photo:
+            "https://images.unsplash.com/photo-1579546929662-711aa81148cf?w=500&h=300&fit=crop",
+        },
+        {
+          id: 15,
+          title: "Holi",
+          date: "2026-03-03",
+          endDate: "2026-03-03",
+          category: "religious",
+          priority: "high",
+          description: "Festival of colors and spring celebration.",
+          location: "Nationwide",
+          photo:
+            "https://images.unsplash.com/photo-1548869207-216df6c2dcc4?w=500&h=300&fit=crop",
+        },
+        {
+          id: 16,
+          title: "Diwali",
+          date: "2026-11-08",
+          endDate: "2026-11-08",
+          category: "religious",
+          priority: "high",
+          description: "Festival of Lights with diyas and fireworks.",
+          location: "Nationwide",
+          photo:
+            "https://images.unsplash.com/photo-1604591259957-7e1e7b2d258f?w=500&h=300&fit=crop",
+        },
+        {
+          id: 17,
+          title: "Republic Day",
+          date: "2027-01-26",
+          endDate: "2027-01-26",
+          category: "national",
+          priority: "high",
+          description: "Constitution of India celebration.",
+          location: "Nationwide",
+          photo:
+            "https://images.unsplash.com/photo-1579546929662-711aa81148cf?w=500&h=300&fit=crop",
+        },
+        {
+          id: 18,
+          title: "Holi",
+          date: "2027-03-22",
+          endDate: "2027-03-22",
+          category: "religious",
+          priority: "high",
+          description: "Color festival celebrating spring.",
+          location: "Nationwide",
+          photo:
+            "https://images.unsplash.com/photo-1548869207-216df6c2dcc4?w=500&h=300&fit=crop",
+        },
+        {
+          id: 19,
+          title: "Diwali",
+          date: "2027-10-29",
+          endDate: "2027-10-29",
+          category: "religious",
+          priority: "high",
+          description: "Festival of Lights and prosperity.",
+          location: "Nationwide",
+          photo:
+            "https://images.unsplash.com/photo-1604591259957-7e1e7b2d258f?w=500&h=300&fit=crop",
+        },
+        {
+          id: 20,
+          title: "Republic Day",
+          date: "2028-01-26",
+          endDate: "2028-01-26",
+          category: "national",
+          priority: "high",
+          description: "Indian Constitution celebration.",
+          location: "Nationwide",
+          photo:
+            "https://images.unsplash.com/photo-1579546929662-711aa81148cf?w=500&h=300&fit=crop",
+        },
+        {
+          id: 21,
+          title: "Holi",
+          date: "2028-03-11",
+          endDate: "2028-03-11",
+          category: "religious",
+          priority: "high",
+          description: "Spring festival of colors.",
+          location: "Nationwide",
+          photo:
+            "https://images.unsplash.com/photo-1548869207-216df6c2dcc4?w=500&h=300&fit=crop",
+        },
+        {
+          id: 22,
+          title: "Diwali",
+          date: "2028-10-17",
+          endDate: "2028-10-17",
+          category: "religious",
+          priority: "high",
+          description: "Victory of light over darkness.",
+          location: "Nationwide",
+          photo:
+            "https://images.unsplash.com/photo-1604591259957-7e1e7b2d258f?w=500&h=300&fit=crop",
+        },
+        {
+          id: 23,
+          title: "Republic Day",
+          date: "2029-01-26",
+          endDate: "2029-01-26",
+          category: "national",
+          priority: "high",
+          description: "National constitution day.",
+          location: "Nationwide",
+          photo:
+            "https://images.unsplash.com/photo-1579546929662-711aa81148cf?w=500&h=300&fit=crop",
+        },
+        {
+          id: 24,
+          title: "Holi",
+          date: "2029-02-28",
+          endDate: "2029-02-28",
+          category: "religious",
+          priority: "high",
+          description: "Festival of colors and joy.",
+          location: "Nationwide",
+          photo:
+            "https://images.unsplash.com/photo-1548869207-216df6c2dcc4?w=500&h=300&fit=crop",
+        },
+        {
+          id: 25,
+          title: "Diwali",
+          date: "2029-11-05",
+          endDate: "2029-11-05",
+          category: "religious",
+          priority: "high",
+          description: "Lights festival with fireworks.",
+          location: "Nationwide",
+          photo:
+            "https://images.unsplash.com/photo-1604591259957-7e1e7b2d258f?w=500&h=300&fit=crop",
+        },
+        {
+          id: 26,
+          title: "Republic Day",
+          date: "2030-01-26",
+          endDate: "2030-01-26",
+          category: "national",
+          priority: "high",
+          description: "Celebration of Indian Republic.",
+          location: "Nationwide",
+          photo:
+            "https://images.unsplash.com/photo-1579546929662-711aa81148cf?w=500&h=300&fit=crop",
+        },
+        {
+          id: 27,
+          title: "Holi",
+          date: "2030-03-19",
+          endDate: "2030-03-19",
+          category: "religious",
+          priority: "high",
+          description: "Spring color festival.",
+          location: "Nationwide",
+          photo:
+            "https://images.unsplash.com/photo-1548869207-216df6c2dcc4?w=500&h=300&fit=crop",
+        },
+        {
+          id: 28,
+          title: "Diwali",
+          date: "2030-10-26",
+          endDate: "2030-10-26",
+          category: "religious",
+          priority: "high",
+          description: "Festival of Lights celebration.",
+          location: "Nationwide",
+          photo:
+            "https://images.unsplash.com/photo-1604591259957-7e1e7b2d258f?w=500&h=300&fit=crop",
+        },
+      ];
+
+      let events = [...indianFestivals];
+      let currentDate = new Date();
+      let selectedDate = "";
+      let editingEventId = null;
+
+      // DOM Elements
+      const calendarGrid = document.getElementById("calendarGrid");
+      const currentMonthElement = document.getElementById("currentMonth");
+      const eventModal = document.getElementById("eventModal");
+      const detailsModal = document.getElementById("detailsModal");
+
+      // Initialize calendar
+      document.addEventListener("DOMContentLoaded", function () {
+        renderCalendar();
+        setupEventListeners();
+      });
+
+      function setupEventListeners() {
+        document.getElementById("prevMonth").addEventListener("click", () => {
+          currentDate.setMonth(currentDate.getMonth() - 1);
+          renderCalendar();
+        });
+
+        document.getElementById("nextMonth").addEventListener("click", () => {
+          currentDate.setMonth(currentDate.getMonth() + 1);
+          renderCalendar();
+        });
+
+        document.getElementById("todayBtn").addEventListener("click", () => {
+          currentDate = new Date();
+          renderCalendar();
+        });
+
+        document
+          .getElementById("closeModal")
+          .addEventListener("click", closeEventModal);
+        document
+          .getElementById("cancelBtn")
+          .addEventListener("click", closeEventModal);
+        document
+          .getElementById("deleteBtn")
+          .addEventListener("click", deleteEvent);
+        document
+          .getElementById("eventForm")
+          .addEventListener("submit", saveEvent);
+      }
+
+      function renderCalendar() {
+        const year = currentDate.getFullYear();
+        const month = currentDate.getMonth();
+
+        // Update current month display
+        currentMonthElement.textContent = `${currentDate.toLocaleString(
+          "default",
+          { month: "long" }
+        )} ${year}`;
+
+        // Clear previous calendar
+        calendarGrid.innerHTML = "";
+
+        // Get first day of month and number of days
+        const firstDay = new Date(year, month, 1).getDay();
+        const daysInMonth = new Date(year, month + 1, 0).getDate();
+
+        // Create empty cells for days before the first day of the month
+        for (let i = 0; i < firstDay; i++) {
+          const emptyDay = document.createElement("div");
+          emptyDay.classList.add("calendar-day");
+          calendarGrid.appendChild(emptyDay);
+        }
+
+        // Create cells for each day of the month
+        const today = new Date();
+        for (let day = 1; day <= daysInMonth; day++) {
+          const dayElement = document.createElement("div");
+          dayElement.classList.add("calendar-day");
+
+          // Format date for this day
+          const dateStr = `${year}-${String(month + 1).padStart(
+            2,
+            "0"
+          )}-${String(day).padStart(2, "0")}`;
+
+          // Check if this day is today
+          if (
+            day === today.getDate() &&
+            month === today.getMonth() &&
+            year === today.getFullYear()
+          ) {
+            dayElement.classList.add("today");
+          }
+
+          // Day header with number and add button
+          const dayHeader = document.createElement("div");
+          dayHeader.classList.add("day-header");
+
+          const dayNumber = document.createElement("span");
+          dayNumber.classList.add("day-number");
+          dayNumber.textContent = day;
+
+          const addButton = document.createElement("button");
+          addButton.classList.add("add-event-btn");
+          addButton.textContent = "+";
+          addButton.addEventListener("click", (e) => {
+            e.stopPropagation();
+            openAddEventModal(dateStr);
+          });
+
+          dayHeader.appendChild(dayNumber);
+          dayHeader.appendChild(addButton);
+          dayElement.appendChild(dayHeader);
+
+          // Add events for this day
+          const dayEvents = getEventsForDate(dateStr);
+
+          // Show event count badge if there are events
+          if (dayEvents.length > 0) {
+            const eventCount = document.createElement("div");
+            eventCount.classList.add("event-count");
+            eventCount.textContent = dayEvents.length;
+            dayElement.appendChild(eventCount);
+          }
+
+          // Check if this date has festivals
+          const festivals = dayEvents.filter(
+            (event) =>
+              event.category === "festival" || event.category === "national"
+          );
+
+          if (festivals.length > 0) {
+            const festivalBadge = document.createElement("div");
+            festivalBadge.classList.add("festival-badge");
+            festivalBadge.textContent = "🎉";
+            dayElement.appendChild(festivalBadge);
+          }
+
+          // Events container
+          const eventsContainer = document.createElement("div");
+          eventsContainer.classList.add("events-container");
+
+          if (dayEvents.length === 0) {
+            const emptyState = document.createElement("div");
+            emptyState.classList.add("empty-state");
+            emptyState.textContent = "No events";
+            eventsContainer.appendChild(emptyState);
+          } else {
+            dayEvents.forEach((event) => {
+              const eventElement = document.createElement("div");
+              eventElement.classList.add("event", `event-${event.category}`);
+
+              // Add event photo thumbnail if available
+              if (event.photo) {
+                const eventPhoto = document.createElement("img");
+                eventPhoto.classList.add("event-photo");
+                eventPhoto.src = event.photo;
+                eventPhoto.alt = event.title;
+                eventElement.appendChild(eventPhoto);
+              }
+
+              const eventTitle = document.createElement("span");
+              eventTitle.textContent = event.title;
+
+              const eventTime = document.createElement("span");
+              eventTime.classList.add("event-time");
+
+              // Show multi-day indicator for events spanning multiple days
+              if (event.endDate && event.endDate !== event.date) {
+                eventTime.textContent = "📅";
+              }
+
+              eventElement.appendChild(eventTitle);
+              eventElement.appendChild(eventTime);
+
+              // Add click event to view details
+              eventElement.addEventListener("click", (e) => {
+                e.stopPropagation();
+                openEventDetails(event);
+              });
+
+              eventsContainer.appendChild(eventElement);
+            });
+          }
+
+          dayElement.appendChild(eventsContainer);
+          calendarGrid.appendChild(dayElement);
+        }
+      }
+
+      function getEventsForDate(dateStr) {
+        return events.filter((event) => {
+          const eventDate = new Date(event.date);
+          const eventEndDate = new Date(event.endDate);
+          const currentDate = new Date(dateStr);
+
+          return currentDate >= eventDate && currentDate <= eventEndDate;
+        });
+      }
+
+      function openAddEventModal(dateStr) {
+        selectedDate = dateStr;
+        document.getElementById("selectedDate").value = dateStr;
+        document.getElementById("eventId").value = "";
+        document.getElementById("modalTitle").textContent = "Add New Event";
+        document.getElementById("deleteBtn").style.display = "none";
+        editingEventId = null;
+
+        // Reset form
+        document.getElementById("eventForm").reset();
+        document.getElementById("startDate").value = dateStr;
+        document.getElementById("endDate").value = dateStr;
+        document.getElementById("photoPreview").style.display = "none";
+
+        eventModal.style.display = "flex";
+      }
+
+      function openEventDetails(event) {
+        document.getElementById("detailsTitle").textContent = event.title;
+        document.getElementById("detailsDate").textContent =
+          formatEventDate(event);
+        document.getElementById("detailsCategory").textContent =
+          event.category.charAt(0).toUpperCase() + event.category.slice(1);
+        document.getElementById("detailsLocation").textContent =
+          event.location || "Not specified";
+        document.getElementById("detailsPriority").textContent =
+          event.priority.charAt(0).toUpperCase() + event.priority.slice(1);
+        document.getElementById("detailsDescription").textContent =
+          event.description || "No description available.";
+
+        const detailsImage = document.getElementById("detailsImage");
+        if (event.photo) {
+          detailsImage.src = event.photo;
+          detailsImage.style.display = "block";
+        } else {
+          detailsImage.style.display = "none";
+        }
+
+        detailsModal.style.display = "flex";
+      }
+
+      function closeEventModal() {
+        eventModal.style.display = "none";
+        editingEventId = null;
+      }
+
+      function closeDetailsModal() {
+        detailsModal.style.display = "none";
+      }
+
+      function previewPhoto(event) {
+        const file = event.target.files[0];
+        const preview = document.getElementById("photoPreview");
+
+        if (file) {
+          const reader = new FileReader();
+          reader.onload = function (e) {
+            preview.src = e.target.result;
+            preview.style.display = "block";
+          };
+          reader.readAsDataURL(file);
+        }
+      }
+
+      function saveEvent(e) {
+        e.preventDefault();
+
+        const eventData = {
+          id: document.getElementById("eventId").value || Date.now(),
+          title: document.getElementById("eventTitle").value,
+          date: document.getElementById("startDate").value,
+          endDate: document.getElementById("endDate").value,
+          category: document.getElementById("eventCategory").value,
+          priority: document.getElementById("eventPriority").value,
+          description: document.getElementById("eventDescription").value,
+          location: document.getElementById("eventLocation").value,
+        };
+
+        // Handle photo upload
+        const photoFile = document.getElementById("eventPhoto").files[0];
+        if (photoFile) {
+          const reader = new FileReader();
+          reader.onload = function (e) {
+            eventData.photo = e.target.result;
+            completeSave(eventData);
+          };
+          reader.readAsDataURL(photoFile);
+        } else {
+          completeSave(eventData);
+        }
+      }
+
+      function completeSave(eventData) {
+        // Update or add event
+        const existingIndex = events.findIndex((e) => e.id == eventData.id);
+        if (existingIndex >= 0) {
+          events[existingIndex] = eventData;
+        } else {
+          events.push(eventData);
+        }
+
+        renderCalendar();
+        closeEventModal();
+
+        // Here you would typically save to MySQL database
+        saveToDatabase(eventData);
+      }
+
+      function deleteEvent() {
+        if (editingEventId) {
+          events = events.filter((e) => e.id != editingEventId);
+          renderCalendar();
+          closeEventModal();
+
+          // Here you would typically delete from MySQL database
+          deleteFromDatabase(editingEventId);
+        }
+      }
+
+      function switchView(view) {
+        // For this example, we only have month view
+        alert(
+          `Switching to ${view} view - This would show a specialized view for ${view}`
+        );
+      }
+
+      function formatEventDate(event) {
+        const startDate = new Date(event.date);
+        const endDate = new Date(event.endDate);
+
+        if (event.date === event.endDate) {
+          return startDate.toLocaleDateString("en-US", {
+            weekday: "long",
+            year: "numeric",
+            month: "long",
+            day: "numeric",
+          });
+        } else {
+          return `${startDate.toLocaleDateString()} - ${endDate.toLocaleDateString()}`;
+        }
+      }
+
+      // Database functions (would be implemented with PHP/MySQL)
+      function saveToDatabase(eventData) {
+        console.log("Saving to database:", eventData);
+        // Implement AJAX call to PHP backend
+      }
+
+      function deleteFromDatabase(eventId) {
+        console.log("Deleting from database:", eventId);
+        // Implement AJAX call to PHP backend
+      }
+    </script>
+  </body>
+</html>
